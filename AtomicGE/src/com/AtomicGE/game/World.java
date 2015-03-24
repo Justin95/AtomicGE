@@ -3,6 +3,7 @@ package com.AtomicGE.game;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.mathUtil.Vector;
 import com.AtomicGE.terrain.Sector;
+import com.AtomicGE.terrain.Sky;
 import com.AtomicGE.terrain.Terrain;
 
 public class World {
@@ -10,11 +11,13 @@ public class World {
 	private Terrain terrain;
 	private long seed;
 	private Vector loadCenter; //currently unused
+	private Sky sky;
 	
 	World(long seed, int loadDiameter){
 		this.seed = seed;
 		this.loadCenter = new Vector(0,0,0);
 		this.terrain = new Terrain(seed, loadDiameter, this.loadCenter);
+		this.sky = new Sky();
 	}
 	
 	/**
@@ -22,7 +25,13 @@ public class World {
 	 * @return an array of RenderObjects to render
 	 */
 	public RenderObject[] getRenderObjects(){
-		return this.terrain.getRenderObjects();
+		RenderObject[] renderObjects = new RenderObject[terrain.getRenderObjects().length + 1];
+		RenderObject[] terrainRObjects = terrain.getRenderObjects();
+		renderObjects[0] = sky.getRenderObject(); //skybox must be first
+		for(int i = 0; i < terrainRObjects.length; i++){
+			renderObjects[i+1] = terrainRObjects[i];
+		}
+		return renderObjects;
 	}
 	
 	

@@ -62,17 +62,28 @@ public class WorldGenerator {
 	 */
 	public Sector generateSector(int x, int z){
 		int width = Sector.POINTS_ACROSS_SECTOR + 1;
-		double[][] heightMap = new double[width][width];
+		double[][] heightMap = new double[width+2][width+2]; //add 2 for hidden edges on each side
+		TerrainMaterial[][] materialMap = new TerrainMaterial[width+2][width+2];
 		for(int i = 0; i < heightMap.length; i++){
 			for(int j = 0; j < heightMap[0].length; j++){
-				double xLookup = i + x * Sector.SECTOR_WIDTH / Sector.DISTANCE_BETWEEN_HEIGHTMAP_POINTS; //scales the sector to look between adjacent integer values for heights
-				double yLookup = j + z * Sector.SECTOR_WIDTH / Sector.DISTANCE_BETWEEN_HEIGHTMAP_POINTS;
+				double xLookup = j * Sector.DISTANCE_BETWEEN_HEIGHTMAP_POINTS + x * Sector.SECTOR_WIDTH; //scales the sector to look between adjacent integer values for heights
+				double yLookup = i * Sector.DISTANCE_BETWEEN_HEIGHTMAP_POINTS + z * Sector.SECTOR_WIDTH;
 				heightMap[j][i] = evaluateHeight(xLookup, yLookup);
+				materialMap[j][i] = selectMaterial(heightMap[j][i]);
 			}
 		}
+		TerrainMap terrain = new TerrainMap(heightMap, materialMap);
 		Vector pos = new Vector(x,0,z);
-		return new Sector(pos,heightMap);
+		return new Sector(pos,terrain);
 	}
+	
+	
+	private TerrainMaterial selectMaterial(double height){
+		if(height < Sector.SEA_LEVEL + 5) return TerrainMaterial.SAND;
+		if(height > 200) return TerrainMaterial.STONE;
+		return TerrainMaterial.GRASS;
+	}
+	
 	
 	/**
 	 * 

@@ -20,8 +20,8 @@ public class AABBCollisionDetector extends CollisionDetector{
 	 */
 	private Vector positionHigh;
 	
-	public AABBCollisionDetector(Vector positionLow, Vector positionHigh, boolean free){
-		super(positionLow, new Vector(0, 0, 0), free);
+	public AABBCollisionDetector(Vector positionLow, Vector positionHigh){
+		super(positionLow, new Vector(0, 0, 0));
 		this.positionLow = positionLow;
 		this.positionHigh = positionHigh;
 	}

@@ -35,6 +35,8 @@ public class RORenderer {
 	 */
 	public void render(RenderObject renderObject){
 		
+		renderObject.preRenderCall();
+		
 		Model model = renderObject.getModel();
 		int numOfIndices = renderObject.getNumIndices();
 		int shaderProgram = model.getShaderProgramID();
@@ -53,6 +55,8 @@ public class RORenderer {
 		
 		GL30.glBindVertexArray(model.getVAO());
 		GL11.glDrawElements(GL11.GL_TRIANGLES,numOfIndices, GL11.GL_UNSIGNED_SHORT, 0);
+		
+		renderObject.postRenderCall();
 	}
 	
 	

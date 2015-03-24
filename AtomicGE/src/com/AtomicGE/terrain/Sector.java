@@ -2,7 +2,6 @@ package com.AtomicGE.terrain;
 
 import com.AtomicGE.modernRender.model.ModelMaker;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
-import com.AtomicGE.modernRender.renderObject.RenderObjectModifier;
 import com.AtomicGE.mathUtil.Vector;
 
 public class Sector {
@@ -14,16 +13,16 @@ public class Sector {
 	
 	private Vector absPos;
 	private Vector sectorPos;
-	private double[][] heightMap;
-	private RenderObjectModifier renObjectModifier;
+	private TerrainMap terrainMap; //heightMap[x][z]
+	private RenderObject renObject;
 	
-	Sector(Vector pos, double[][] heightMap){
+	Sector(Vector pos, TerrainMap terrainMap){
 		this.sectorPos = pos;
 		this.absPos = new Vector(pos.getIHat()*SECTOR_WIDTH,pos.getJHat()*SECTOR_WIDTH,pos.getKHat()*SECTOR_WIDTH);
-		this.heightMap = heightMap;
+		this.terrainMap = terrainMap;
 		Vector rot = new Vector(0,0,0);
-		this.renObjectModifier = new RenderObjectModifier(
-				ModelMaker.makeModel(heightMap,DISTANCE_BETWEEN_HEIGHTMAP_POINTS),
+		this.renObject = new RenderObject(
+				ModelMaker.makeModel(terrainMap,DISTANCE_BETWEEN_HEIGHTMAP_POINTS),
 				absPos,
 				rot  
 		);
@@ -36,16 +35,16 @@ public class Sector {
 	 * @return a RenderObject for this Sector
 	 */
 	public RenderObject getRenderObject(){
-		return this.renObjectModifier.getRenderObject();
+		return this.renObject;
 	}
 	
 	
 	/**
-	 * Gets the heightMap of this Sector
-	 * @return an array of arrays of doubles describing heights, access as heightMap[y][x] or heightMap[j][i]
+	 * Gets the terrainMap of this Sector
+	 * @return a TerrainMap object representing this Sector's terrain
 	 */
-	public double[][] getHeightMap(){
-		return this.heightMap;
+	public TerrainMap getTerrainMap(){
+		return this.terrainMap;
 	}
 	
 	/**

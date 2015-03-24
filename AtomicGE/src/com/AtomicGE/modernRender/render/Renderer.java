@@ -74,7 +74,7 @@ public class Renderer {
 	private void initOpenGL(float fov, float nearClip, float farClip){
 		ContextAttribs conAtt = new ContextAttribs(3,3).withProfileCore(true);
 		PixelFormat pixelForm = new PixelFormat();
-		Display.setTitle("OpenGL Test");
+		Display.setTitle("Atomic Game Engine");
 		DisplayMode dm = Display.getDesktopDisplayMode();
 		Display.setVSyncEnabled(true);
 		Display.setResizable(true);

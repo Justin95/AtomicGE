@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import com.AtomicGE.mathUtil.Vector;
-import com.AtomicGE.mathUtil.VectorMath;
 import com.AtomicGE.modernRender.GPUprograms.Shaders;
+import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.modernRender.texture.Texture;
 import com.AtomicGE.modernRender.texture.Textures;
 import com.AtomicGE.terrain.Sector;
+import com.AtomicGE.terrain.SkyBox;
+import com.AtomicGE.terrain.TerrainMap;
 
 public class ModelMaker {
 	
@@ -21,17 +23,17 @@ public class ModelMaker {
 	 * @param heightMap an array of arrays of doubles, which describe heights
 	 * @return a com.OpenGLPractace.modernRender.model.Model object which describes how to render the given heightMap
 	 */
-	public static Model makeModel(double[][] heightMap,double distanceBetweenPoints){
+	public static Model makeModel(TerrainMap terrain,double distanceBetweenPoints){
 		int shaderProgramID = Shaders.MESH_SHADER_PROGRAM;
 		ArrayList<ModelTriangle> triangles = new ArrayList<ModelTriangle>();
-		for(int i = 0; i < heightMap.length - 1; i++){
-			for(int j = 0; j < heightMap[0].length - 1; j++){
-				ModelTriangle[] twoTriangles = createHeightMapSquare(i, j, heightMap, distanceBetweenPoints);
+		for(int i = 0; i < terrain.getWidth()-1; i++){
+			for(int j = 0; j < terrain.getWidth()-1; j++){
+				ModelTriangle[] twoTriangles = createHeightMapSquare(i, j, terrain, distanceBetweenPoints);
 				triangles.add(twoTriangles[0]);
 				triangles.add(twoTriangles[1]);
 			}
 		}
-		addOcean(triangles, distanceBetweenPoints * (heightMap.length - 1));
+		addOcean(triangles, distanceBetweenPoints * (terrain.getWidth() - 1));
 		Model model = new Model(triangles,shaderProgramID);
 		return model;
 	}
@@ -46,27 +48,27 @@ public class ModelMaker {
 	 * @param distance the distance between points in the heightMap
 	 * @return an array of ModelTriangle objects of length 2
 	 */
-	private static ModelTriangle[] createHeightMapSquare(int x, int z, double[][] heightMap,double distance){
+	private static ModelTriangle[] createHeightMapSquare(int x, int z, TerrainMap terrain, double distance){
 		Color triangleColor = Color.WHITE;
-		Texture texture = getMaterialTexture(x, z, heightMap);
+		Texture texture = terrain.materialAt(x, z).getTexture();
 		
-		Vector pos  = new Vector(x * distance,heightMap[z][x],z*distance);
-		Vector norm = getNormal(x, z, heightMap);
+		Vector pos  = new Vector(x * distance,terrain.heightAt(x, z),z*distance);
+		Vector norm =  terrain.normalAt(x, z);
 		Vector texCoord = new Vector(x,z,0);
 		Vertex v1   = new Vertex(pos,norm,texCoord,triangleColor, texture);
 		
-		pos         = new Vector((x+1)*distance,heightMap[z][x+1],z  *distance);
-		norm		=  getNormal(x+1, z  , heightMap);
+		pos         = new Vector((x+1)*distance,terrain.heightAt(x+1, z),z  *distance);
+		norm		=  terrain.normalAt(x+1, z);
 		texCoord    = new Vector(x+1, z  ,0); 
 		Vertex v2   = new Vertex(pos,norm,texCoord,triangleColor, texture);
 		
-		pos         = new Vector(x * distance,heightMap[z+1][x],(z+1)*distance);
-		norm 		=  getNormal(x  ,z+1, heightMap);
+		pos         = new Vector(x * distance,terrain.heightAt(x, z+1),(z+1)*distance);
+		norm 		=  terrain.normalAt(x, z+1);
 		texCoord    = new Vector(x  ,z+1, 0);
 		Vertex v3   = new Vertex(pos,norm,texCoord,triangleColor, texture);
 		
-		pos         = new Vector((x+1)*distance,heightMap[z+1][x+1],(z+1)*distance);
-		norm 		=  getNormal( x+1, z+1, heightMap);
+		pos         = new Vector((x+1)*distance,terrain.heightAt(x+1, z+1),(z+1)*distance);
+		norm 		=  terrain.normalAt(x+1, z+1);
 		texCoord    = new Vector( x+1, z+1, 0);
 		Vertex v4   = new Vertex(pos,norm,texCoord,triangleColor, texture);
 		
@@ -76,12 +78,6 @@ public class ModelMaker {
 		return new ModelTriangle[]{modelTri1,modelTri2};
 	}
 	
-	
-	private static Texture getMaterialTexture(int x, int z, double[][] heightMap){
-		if(Math.abs(heightMap[z][x] - heightMap[z+1][x+1]) > CLIFF_SLOPE) return Textures.STONE;
-		if(Math.abs(heightMap[z+1][x] - heightMap[z][x+1]) > CLIFF_SLOPE) return Textures.STONE;
-		else return Textures.GRASS;
-	}
 	
 	
 	/**
@@ -115,84 +111,23 @@ public class ModelMaker {
 		triangles.add(secondBack);
 	}
 	
-	/**
-	 * Calculates the surface normal at a given x and z coordinate on the given heightMap.
-	 * @param x the x coordinate
-	 * @param z the z coordinate
-	 * @param heightMap the array of arrays of doubles representing heights
-	 * @return a Vector representing the surface normal at the given point
-	 */
-	private static Vector getNormal(int x, int z, double[][] heightMap){
-		Vector[] adjacentPoints = getAdjacentPoints(x, z, heightMap);
-		Vector[] normals = new Vector[adjacentPoints.length];
-		Vector point = new Vector(x, heightMap[x][z], z);
-		for(int i = 0; i < adjacentPoints.length; i++){
-			int j = i < adjacentPoints.length - 1 ? i + 1 : 0;
-			Vector adjPoint1 = adjacentPoints[i];
-			Vector adjPoint2 = adjacentPoints[j];
-			Vector relative1 = VectorMath.subtractVectors(adjPoint1, point);
-			Vector relative2 = VectorMath.subtractVectors(adjPoint2, point);
-			Vector normal   = getNormal(relative1, relative2);
-			normals[i] = normal;
-		}
-		Vector normal = VectorMath.average(normals);
-		return normal;
-	}
 	
-	/**
-	 * Gets the normal from two adjacent Vectors
-	 * @param adjacent1
-	 * @param adjacent2
-	 * @return the normal of two adjacent Vectors
-	 */
-	private static Vector getNormal(Vector adjacent1, Vector adjacent2){
-		Vector normal = VectorMath.crossProduct(adjacent1, adjacent2);
-		if(normal.getJHat() < 0) normal = VectorMath.getInverse(normal);
-		normal = VectorMath.getUnitVector(normal);
-		//System.out.println(normal + " " + adjacent1 + " " + adjacent2);
-		return normal;
-	}
-	
-	/**
-	 * Creates an array of adjacent Vectors from the heightMap
-	 * @param x the x coordinate
-	 * @param z the z coordinate
-	 * @param heightMap
-	 * @return an array of Vector points which are adjacent to the given point
-	 */
-	private static Vector[] getAdjacentPoints(int x, int z, double[][] heightMap){
-		//get available directions
-		boolean left   = x > 0;
-		boolean right  = x < heightMap.length - 1;
-		boolean bottom = z > 0;
-		boolean top    = z < heightMap[0].length - 1;
-		//sum number true
-		int sum = 0;
-		if(top)    sum++;
-		if(right)  sum++;
-		if(left)   sum++;
-		if(bottom) sum++;
-		Vector[] points = new Vector[sum];
-		//assign values
-		int index = 0;
-		if(top){
-			points[index] = new Vector(x,   heightMap[x][z+1], z+1);
-			index++;
-		}
-		if(right){
-			points[index] = new Vector(x+1, heightMap[x+1][z], z);
-			index++;
-		}
-		if(bottom){
-			points[index] = new Vector(x,   heightMap[x][z-1], z-1);
-			index++;
-		}
-		if(left){
-			points[index] = new Vector(x-1, heightMap[x-1][z], z);
-			index++;
-		}
-		
-		return points;
+	public static SkyBox getDefaultSkyBox(){
+		Color skyColor = new Color(135,206,235);
+		ArrayList<ModelTriangle> triangles = new ArrayList<>();
+		Vector zero = new Vector(0,0,0);
+		Vertex a = new Vertex(new Vector(-1,-1,-1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex b = new Vertex(new Vector( 1,-1,-1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex c = new Vertex(new Vector(-1, 1,-1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex d = new Vertex(new Vector( 1, 1,-1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex e = new Vertex(new Vector(-1,-1, 1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex f = new Vertex(new Vector( 1,-1, 1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex g = new Vertex(new Vector(-1, 1, 1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		Vertex h = new Vertex(new Vector( 1, 1, 1),zero,zero,skyColor,Textures.NO_TEXTURE);
+		triangles.add(new ModelTriangle(a,b,c));
+		triangles.add(new ModelTriangle(b,d,c));
+		Model model = new Model(triangles, Shaders.FLAT_SHADER_PROGRAM);
+		return new SkyBox(model, zero, zero);
 	}
 	
 	

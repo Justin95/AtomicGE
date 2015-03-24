@@ -14,10 +14,7 @@ import com.AtomicGE.modernRender.render.RenderMatrixHelper;
  *This is the class which is rendered by the RenderObjectRenderer (com.AtomicGE.modernRenderer.RORenderer).
  *This class contains all the necessary information to draw itself.
  *This class only gives information to the RORenderer and does not do any rendering itself.
- *This class cannot be instantiated and must be created by creating a RenderObjectModifier and
- *retrieving the RenderObject from there. A RenderObject can only be modified by its RenderObjectModifier.
- *RenderObjectModifiers are used so new RenderObjects do not need to be removed from a list, recreated, and re-added,
- *in order to modify them.
+ *
  */
 public class RenderObject { 
 	
@@ -27,13 +24,30 @@ public class RenderObject {
 	private Matrix4f modelMatrix;
 	
 	
-	protected RenderObject(Model model, Vector position, Vector rotation){ //might want make shader programs per RO
+	public RenderObject(Model model, Vector position, Vector rotation){ //might want make shader programs per RO
 		this.model = model;
 		this.position = position;
 		this.rotation = rotation;
 		updateModelMatrix(position,rotation);
 	}
 	
+	
+	/**
+	 * This method is called directly before this RenderObject is rendered.
+	 * Override this method in a sub class to change rendering behavior.
+	 */
+	public void preRenderCall(){
+		
+	}
+	
+	
+	/**
+	 * This method is called directly after this RenderObject is rendered.
+	 * Override this method in a sub class to change rendering behavior.
+	 */
+	public void postRenderCall(){
+		
+	}
 	
 	
 	
@@ -53,7 +67,7 @@ public class RenderObject {
 	 * Sets the model for this RenderObject. This should only be called in RenderObjectModifier
 	 * @param model the new model
 	 */
-	protected void setModel(Model model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 	
@@ -63,7 +77,7 @@ public class RenderObject {
 	 * @param position the new Position Vector
 	 * @param rotation the new Rotation Vector
 	 */
-	protected void setPositionRotation(Vector position, Vector rotation){
+	public void setPositionRotation(Vector position, Vector rotation){
 		this.position = position;
 		this.rotation = rotation;
 		updateModelMatrix(position,rotation);
@@ -74,7 +88,7 @@ public class RenderObject {
 	 * Sets the position for this RenderObject. This should only be called in RenderObjectModifier
 	 * @param position the new position Vector
 	 */
-	protected void setPosition(Vector position) {
+	public void setPosition(Vector position) {
 		this.position = position;
 		updateModelMatrix(position,this.rotation);
 	}
