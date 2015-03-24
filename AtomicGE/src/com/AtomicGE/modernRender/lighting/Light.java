@@ -35,5 +35,8 @@ public class Light {
 	}
 	
 	
+	public static void setAmbientLight(float light){
+		//TODO
+	}
 	
 }

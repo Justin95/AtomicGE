@@ -3,7 +3,7 @@ package com.AtomicGE.game;
 import com.AtomicGE.modernRender.lighting.Light;
 import com.AtomicGE.modernRender.model.ModelMaker;
 import com.AtomicGE.modernRender.render.Renderer;
-import com.AtomicGE.modernRender.renderObject.RenderObjectModifier;
+import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.mathUtil.Vector;
 import com.AtomicGE.mathUtil.VectorMath;
 import com.AtomicGE.sound.SoundPlayer;
@@ -20,7 +20,6 @@ public class Game {
 	
 	public Game(Renderer render,long seed){
 		this.render = render;
-		running = true;
 		player = new Player(new Vector(0,0,0),new Vector(0,0,0));
 		this.world = new World(seed,17);
 		this.soundPlayer = new SoundPlayer();
@@ -31,6 +30,7 @@ public class Game {
 	 * Start the game loop
 	 */
 	public void start(){
+		this.running = true;
 		//this.soundPlayer.playSound(Sounds.TEST_SONG);
 		loop();
 		stop();
@@ -44,7 +44,7 @@ public class Game {
 		Light light = new Light(VectorMath.getUnitVector(new Vector(10,-10, 2)));
 		light.enable();
 		double t = 0;
-		//render.addToRenderList(new RenderObjectModifier(ModelMaker.getTestModel(),new Vector(0,30,0),new Vector(0,0,0)).getRenderObject());
+		//render.addToRenderList(new RenderObject(ModelMaker.getTestModel(),new Vector(0,30,0),new Vector(10,0,0)));
 		while(running){
 			light = new Light(VectorMath.getUnitVector(new Vector(Math.sin(t), -.4, Math.cos(t))));
 			light.enable();

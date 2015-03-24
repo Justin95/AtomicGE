@@ -21,7 +21,7 @@ public class CollisionMath {
 	public static boolean isColliding(SphereCollisionDetector sphere1, SphereCollisionDetector sphere2){
 		Vector distanceVector = VectorMath.subtractVectors(sphere1.getPosition(), sphere2.getPosition());
 		double distance = VectorMath.magnitude(distanceVector);
-		boolean intersect = distance <= sphere1.getRadius() + sphere2.getRadius() ? true : false;
+		boolean intersect = distance <= sphere1.getRadius() + sphere2.getRadius();
 		return intersect;
 	}
 	

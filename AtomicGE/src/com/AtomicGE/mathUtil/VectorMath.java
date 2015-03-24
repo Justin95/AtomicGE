@@ -189,7 +189,7 @@ public class VectorMath {
 	 * @param vectors an array of Vectors to take the average of
 	 * @return a new Vector which equals the average of the given vectors
 	 */
-	public static Vector average(Vector[] vectors){
+	public static Vector average(Vector... vectors){
 		double x = 0;
 		double y = 0;
 		double z = 0;

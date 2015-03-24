@@ -4,6 +4,7 @@ import com.AtomicGE.mathUtil.Vector;
 
 public abstract class CollisionDetector {
 	
+	private static Class[] collisionDetectorTypes;
 	
 	protected Vector  position;
 	protected Vector  rotation;
@@ -21,10 +22,9 @@ public abstract class CollisionDetector {
 	 * @param active whether or not the Collision Detector checks its own collisions every tick,
 	 * note: active Collision Detectors can still collide with this CD.
 	 */
-	CollisionDetector(Vector position, Vector rotation, boolean active){
+	CollisionDetector(Vector position, Vector rotation){
 		this.position = position;
 		this.rotation = rotation;
-		this.active   = active;
 	}
 	
 	//each subclass must implement methods for colliding with each subclass
@@ -32,6 +32,14 @@ public abstract class CollisionDetector {
 	
 	public abstract CollisionReport getCollisionReport(AABBCollisionDetector aabb);
 	
+	/**
+	 * Does a collision check against any type of collision detector
+	 * @param colDet
+	 * @return
+	 */
+	public CollisionReport getCollisionReport(CollisionDetector colDet){
+		for()
+	}
 	
 	/**
 	 * 
@@ -51,12 +59,5 @@ public abstract class CollisionDetector {
 	}
 	
 	
-	/**
-	 * Describes if this Collision Detector checks its own collisions every tick.
-	 * @return true if active, false if inactive
-	 */
-	public boolean isActive(){
-		return this.active;
-	}
 	
 }

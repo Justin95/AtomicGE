@@ -7,8 +7,8 @@ public class SphereCollisionDetector extends CollisionDetector{
 	
 	private double radius;
 	
-	public SphereCollisionDetector(Vector position, Vector rotation, boolean free, double radius){
-		super(position, rotation, free);
+	public SphereCollisionDetector(Vector position, Vector rotation, double radius){
+		super(position, rotation);
 		this.radius = radius;
 	}
 	
