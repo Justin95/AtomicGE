@@ -1,8 +1,11 @@
-package com.AtomicGE.terrain;
+package com.EngineTest.terrain;
 
+import com.AtomicGE.modernRender.model.Model;
 import com.AtomicGE.modernRender.model.ModelMaker;
+import com.AtomicGE.modernRender.render.RenderQueue;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.mathUtil.Vector;
+import com.EngineTest.game.MaterialLibrary;
 
 public class Sector {
 	
@@ -13,20 +16,31 @@ public class Sector {
 	
 	private Vector absPos;
 	private Vector sectorPos;
-	private TerrainMap terrainMap; //heightMap[x][z]
+	private TerrainMap terrainMap;
 	private RenderObject renObject;
+	private RenderQueue renQueue;
 	
-	Sector(Vector pos, TerrainMap terrainMap){
-		this.sectorPos = pos;
-		this.absPos = new Vector(pos.getIHat()*SECTOR_WIDTH,pos.getJHat()*SECTOR_WIDTH,pos.getKHat()*SECTOR_WIDTH);
+	
+	Sector(TerrainMap terrainMap, RenderQueue renderQueue, MaterialLibrary matLib){
+		this.renQueue = renderQueue;
+		this.sectorPos = terrainMap.getTerrainPosition();
+		this.absPos = new Vector(sectorPos.getIHat()*SECTOR_WIDTH,sectorPos.getJHat()*SECTOR_WIDTH,sectorPos.getKHat()*SECTOR_WIDTH);
 		this.terrainMap = terrainMap;
 		Vector rot = new Vector(0,0,0);
-		this.renObject = new RenderObject(
-				ModelMaker.makeModel(terrainMap,DISTANCE_BETWEEN_HEIGHTMAP_POINTS),
-				absPos,
-				rot  
-		);
-		
+		Model model = ModelMaker.makeModel(terrainMap,DISTANCE_BETWEEN_HEIGHTMAP_POINTS, matLib);
+		setRenderObject(createRenderObject(model, absPos, rot)); //use setRenderObject to eliminate race condition
+	}
+	
+	
+	public synchronized void setRenderObject(RenderObject renderObject){
+		this.renObject = renderObject;
+	}
+	
+	
+	private RenderObject createRenderObject(Model model, Vector pos, Vector rot){
+		Thread initalizationThread = new RenderObjectInitalizationThread(model, pos, rot, this, renQueue);
+		initalizationThread.start();
+		return RenderObject.BLANK_RENDEROBJECT;
 	}
 	
 	
@@ -61,6 +75,10 @@ public class Sector {
 	 */
 	public Vector getWorldPosition(){
 		return this.absPos;
+	}
+	
+	public String toString(){
+		return "Sector: x: " + (int)this.getSectorPosition().getIHat() + " y: " + (int)this.getSectorPosition().getKHat();
 	}
 	
 }

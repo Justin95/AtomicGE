@@ -1,7 +1,8 @@
-package com.AtomicGE.terrain;
+package com.EngineTest.terrain;
 
 import com.AtomicGE.mathUtil.Vector;
 import com.AtomicGE.mathUtil.VectorMath;
+import com.EngineTest.game.Material;
 
 /**
  * 
@@ -13,10 +14,12 @@ import com.AtomicGE.mathUtil.VectorMath;
  */
 public class TerrainMap {
 	
+	private Vector position; // relative to other terrain maps not absolute world position
 	private double[][] heights;
-	private TerrainMaterial[][] materials;
+	private Material[][] materials;
 	private Vector[][] normals;
 	private int width;
+	private Material oceanMaterial;
 	
 	/**
 	 * Creates a TerrainMap which stores information about a square of terrain. 
@@ -24,11 +27,13 @@ public class TerrainMap {
 	 * @param heights a double[][] which stores heights. Relevant heights should be between 1 and length - 1. 
 	 * @param materials a TerrainMaterial[][] which contains information about which material makes up the terrain.
 	 */
-	public TerrainMap(double[][] heights, TerrainMaterial[][] materials){
+	public TerrainMap(double[][] heights, Material[][] materials, Vector pos, Material liquidMat){
+		this.position = pos;
 		this.width = heights.length - 2; //width does not count hidden edges, hence -2
 		this.heights = heights;
 		this.materials = materials;
 		this.normals = createNormals(heights);
+		this.oceanMaterial = liquidMat;
 	}
 	
 	
@@ -79,7 +84,7 @@ public class TerrainMap {
 	 * @param z the z coordinate to retrieve the TerrainMaterial at
 	 * @return The TerrainMaterial at the given x, z. Indices start at 0.
 	 */
-	public TerrainMaterial materialAt(int x, int z){
+	public Material materialAt(int x, int z){
 		return this.materials[x+1][z+1];
 	}
 	
@@ -103,5 +108,12 @@ public class TerrainMap {
 		return this.width;
 	}
 	
+	public Vector getTerrainPosition(){
+		return this.position;
+	}
 	
+	
+	public Material getOceanMaterial(){
+		return this.oceanMaterial;
+	}
 }

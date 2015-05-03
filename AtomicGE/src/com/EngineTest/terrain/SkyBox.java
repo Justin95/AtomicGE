@@ -1,4 +1,4 @@
-package com.AtomicGE.terrain;
+package com.EngineTest.terrain;
 
 import org.lwjgl.opengl.GL11;
 

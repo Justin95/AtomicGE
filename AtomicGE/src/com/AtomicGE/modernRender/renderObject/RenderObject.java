@@ -18,6 +18,11 @@ import com.AtomicGE.modernRender.render.RenderMatrixHelper;
  */
 public class RenderObject { 
 	
+	/**
+	 * A blank RenderObject to use to render nothing.
+	 */
+	public static final RenderObject BLANK_RENDEROBJECT = new RenderObject(null, new Vector(0,0,0), new Vector(0,0,0));
+	
 	private Model model;
 	private Vector position;
 	private Vector rotation;
@@ -145,6 +150,13 @@ public class RenderObject {
 	 */
 	public int getNumIndices(){
 		return this.model.getNumIndices();
+	}
+	
+	
+	public String toString(){
+		if(this == BLANK_RENDEROBJECT) return "RenderObject: Blank RenderObject"; //YES == to see if same object
+		if(!this.model.isInitialized()) return "RenderObject: Uninitialized";
+		return "RenderObject: " + "Position: " + this.position + " Num Vertices: " + this.model.getNumIndices();
 	}
 	
 }

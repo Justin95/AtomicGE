@@ -7,23 +7,24 @@ import com.AtomicGE.mathUtil.Vector;
 import com.AtomicGE.modernRender.GPUprograms.Shaders;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.modernRender.texture.Texture;
-import com.AtomicGE.modernRender.texture.Textures;
-import com.AtomicGE.terrain.Sector;
-import com.AtomicGE.terrain.SkyBox;
-import com.AtomicGE.terrain.TerrainMap;
+import com.AtomicGE.modernRender.texture.TextureLibrary;
+import com.EngineTest.game.Material;
+import com.EngineTest.game.MaterialLibrary;
+import com.EngineTest.terrain.Sector;
+import com.EngineTest.terrain.SkyBox;
+import com.EngineTest.terrain.TerrainMap;
 
 public class ModelMaker {
 	
 	public static double MAX_GRASS_HEIGHT = 100;
 	public static double CLIFF_SLOPE = 1;
 	
-	
 	/**
 	 * Creates a model from the given heightMap
 	 * @param heightMap an array of arrays of doubles, which describe heights
 	 * @return a com.OpenGLPractace.modernRender.model.Model object which describes how to render the given heightMap
 	 */
-	public static Model makeModel(TerrainMap terrain,double distanceBetweenPoints){
+	public static Model makeModel(TerrainMap terrain,double distanceBetweenPoints, MaterialLibrary matLib){
 		int shaderProgramID = Shaders.MESH_SHADER_PROGRAM;
 		ArrayList<ModelTriangle> triangles = new ArrayList<ModelTriangle>();
 		for(int i = 0; i < terrain.getWidth()-1; i++){
@@ -33,7 +34,7 @@ public class ModelMaker {
 				triangles.add(twoTriangles[1]);
 			}
 		}
-		addOcean(triangles, distanceBetweenPoints * (terrain.getWidth() - 1));
+		addOcean(triangles, distanceBetweenPoints * (terrain.getWidth() - 1), terrain.getOceanMaterial());
 		Model model = new Model(triangles,shaderProgramID);
 		return model;
 	}
@@ -94,13 +95,14 @@ public class ModelMaker {
 	}
 	
 	//dirty temp method
-	private static void addOcean(ArrayList<ModelTriangle> triangles, double length){
+	private static void addOcean(ArrayList<ModelTriangle> triangles, double length, Material oceanMat){
 		double sea = Sector.SEA_LEVEL;
+		Texture water = oceanMat.getTexture();
 		Vector normal = new Vector(0,1,0);
-		Vertex aa = new Vertex(new Vector(0,sea,0), normal, new Vector(0,0,0), Color.WHITE, Textures.WATER);
-		Vertex ba = new Vertex(new Vector(length,sea,0), normal, new Vector(1,0,0), Color.WHITE, Textures.WATER);
-		Vertex ab = new Vertex(new Vector(0,sea,length), normal,new Vector(0,1,0), Color.WHITE, Textures.WATER);
-		Vertex bb = new Vertex(new Vector(length,sea,length), normal, new Vector(1,1,0), Color.WHITE, Textures.WATER);
+		Vertex aa = new Vertex(new Vector(0,sea,0), normal, new Vector(0,0,0), Color.WHITE, water);
+		Vertex ba = new Vertex(new Vector(length,sea,0), normal, new Vector(1,0,0), Color.WHITE, water);
+		Vertex ab = new Vertex(new Vector(0,sea,length), normal,new Vector(0,1,0), Color.WHITE, water);
+		Vertex bb = new Vertex(new Vector(length,sea,length), normal, new Vector(1,1,0), Color.WHITE, water);
 		ModelTriangle first      = new ModelTriangle(aa,bb,ba);
 		ModelTriangle second     = new ModelTriangle(aa,ab,bb);
 		ModelTriangle firstBack  = new ModelTriangle(aa,ba,bb);

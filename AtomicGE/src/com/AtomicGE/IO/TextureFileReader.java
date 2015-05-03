@@ -3,6 +3,7 @@ package com.AtomicGE.IO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -35,8 +36,8 @@ public class TextureFileReader {
 		BufferedImage image;
 		try{
 			image = ImageIO.read(file);
-		}catch(Exception e){
-			System.out.println("loadedImage as null: \n" + e);
+		}catch(IOException e){
+			System.out.println("Loaded Image as null: \n" + file.getName() + "\n" + e);
 			image = null;
 		}
 		return image;

@@ -1,4 +1,4 @@
-package com.AtomicGE.game;
+package com.EngineTest.game;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

@@ -1,4 +1,4 @@
-package com.AtomicGE.terrain;
+package com.EngineTest.terrain;
 
 import com.AtomicGE.modernRender.model.ModelMaker;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
