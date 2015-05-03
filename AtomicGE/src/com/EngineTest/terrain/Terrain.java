@@ -1,7 +1,9 @@
-package com.AtomicGE.terrain;
+package com.EngineTest.terrain;
 
 import com.AtomicGE.mathUtil.Vector;
+import com.AtomicGE.modernRender.render.RenderQueue;
 import com.AtomicGE.modernRender.renderObject.RenderObject;
+import com.EngineTest.game.MaterialLibrary;
 
 public class Terrain {
 	
@@ -9,12 +11,16 @@ public class Terrain {
 	private WorldGenerator worldGen;
 	private Sector[][] sectors; // sectors[z][x]
 	private int loadDiameter;
+	private RenderQueue renderQueue;
+	private MaterialLibrary matLib;
 	
-	public Terrain(long seed, int loadDiameter, Vector center){
+	public Terrain(long seed, int loadDiameter, Vector center, RenderQueue renderQueue, MaterialLibrary matLib){
 		this.seed = seed;
-		this.worldGen = new WorldGenerator(seed);
+		this.matLib = matLib;
+		this.worldGen = new WorldGenerator(seed, matLib);
 		this.sectors = new Sector[loadDiameter][loadDiameter];
 		this.loadDiameter = loadDiameter;
+		this.renderQueue = renderQueue;
 	}
 	
 	
@@ -43,12 +49,13 @@ public class Terrain {
 	 * @return a new Sector at the x and y coordinates
 	 */
 	private Sector generateSector(int x, int y){
-		return this.worldGen.generateSector(x, y);
+		TerrainMap terrain = this.worldGen.generateTerrainMap(x, y);
+		return new Sector(terrain, this.renderQueue, matLib);
 	}
 	
 	
 	/**
-	 * Gets the Sector at the given x and y coordinates. Either returns the Sector or generates a new Sector if not already created.
+	 * Gets the Sector at the given x and z coordinates. Either returns the Sector or generates a new Sector if not already created.
 	 * @param x the x coordinate of the sector
 	 * @param z the z coordinate of the sector
 	 * @return the Sector at x,z

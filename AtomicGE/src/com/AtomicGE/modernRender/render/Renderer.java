@@ -1,7 +1,5 @@
 package com.AtomicGE.modernRender.render;
 
-import java.util.ArrayList;
-
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -16,32 +14,44 @@ import com.AtomicGE.modernRender.renderObject.RenderObject;
 public class Renderer {
 	
 	private int targetFPS;
-	ArrayList<RenderObject> renderList;
 	private RORenderer roRenderer;
 	private TimeTracker fpsTracker;
 	private Camera camera;
+	private float fov;
+	private float nearClip;
+	private float farClip;
 	
-	public Renderer(float fov, float nearClip, float farClip){
-		renderList = new ArrayList<RenderObject>();
+	public Renderer(RenderSettings renSettings){
 		targetFPS = 60;
 		roRenderer = new RORenderer();
 		this.fpsTracker = new TimeTracker();
-		initOpenGL(fov,nearClip,farClip); //also initializes camera
+		this.fov = renSettings.getFov();
+		this.nearClip = renSettings.getNearClippingDistance();
+		this.farClip = renSettings.getFarClippingDistance();
+	}
+	
+	
+	/**
+	 * Initialize this Renderer. Creates the window and initializes the openGL context.
+	 * This method must be called before ANY openGL functions are used.
+	 */
+	public void initalize(){
+		initOpenGL(this.fov, this.nearClip, this.farClip);
 	}
 	
 	
 	/** 
-	 * Renders a frame
+	 * Renders a frame by drawing a given ArrayList of RenderObjects.
+	 * @param renderObjects an ArrayList of RenderObjects to draw
 	 */
-	public void render(){
+	public void render(Iterable<RenderObject> renderObjects){
 		
-		//glClearColor(.2f,.2f,.2f,1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		camera.updateCamera(Display.getDisplayMode());
 		camera.useCameraView();
 		
-		for(RenderObject renderObject : renderList){
+		for(RenderObject renderObject : renderObjects){
 			roRenderer.render(renderObject);
 		}
 		
@@ -49,9 +59,6 @@ public class Renderer {
 		Display.sync(targetFPS);
 		Display.update();
 	}
-	
-	
-	
 	
 	
 	/**
@@ -112,45 +119,8 @@ public class Renderer {
 	
 	
 	/**
-	 * Adds the given RenderObject to the List of RenderObjects to be rendered each frame.
-	 * @param renObj the object to be added
+	 * Cleans up this rendering context. Call this method when the program is closing.
 	 */
-	public void addToRenderList(RenderObject renObj){
-		renderList.add(renObj);
-	}
-	
-	
-	/**
-	 * Adds the given RenderObjects to the List of RenderObjects to be rendered each frame.
-	 * @param renObjs an array of RenderObjects to be added
-	 */
-	public void addToRenderList(RenderObject[] renObjs){
-		for(RenderObject renobj : renObjs){
-			addToRenderList(renobj);
-		}
-	}
-	
-	
-	/**
-	 * Removes the given RenderObject from the List of RenderObjects to be rendered each frame.
-	 * @param renObj the RenderObject to removed
-	 */
-	public void removeFromRenderList(RenderObject renObj){
-		renderList.remove(renObj);
-	}
-	
-	
-	/**
-	 * Removes the given RenderObjects from the List of RenderObjects to be rendered each frame.
-	 * @param renObjs the RenderObjects to remove
-	 */
-	public void removeFromRenderList(RenderObject[] renObjs){
-		for(RenderObject renobj : renObjs){
-			removeFromRenderList(renobj);
-		}
-	}
-	
-	
 	public void cleanUp(){
 		Display.destroy();
 	}

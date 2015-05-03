@@ -24,7 +24,7 @@ public class Texture {
 	
 	
 	public void bind(int textureNumber){
-		if(textureNumber < 0 || textureNumber > GL13.GL_MAX_TEXTURE_UNITS) System.out.println("Error: Texture.java");
+		if(textureNumber < 0 || textureNumber > GL13.GL_MAX_TEXTURE_UNITS) System.out.println("Error: com.AtomicGE.modernRender.texture.Texture.java");
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + textureNumber);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureID);
 	}

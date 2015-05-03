@@ -6,20 +6,18 @@ import com.AtomicGE.modernRender.texture.Texture;
 
 
 /**
- * 
- * @author Justin Bonner
- *
  *Model objects contain the data necessary to render themselves.
  *They do not do the rendering themselves but rather give the information
  *to a Renderer which requests it.
- *
+ * 
+ * @author Justin Bonner
  */
 public class Model {
 	
 	private int shaderProgram;
-	private int vaoAddress;
-	private int numIndices;
-	private Texture[] textures;
+	private VAO vaoInfo;
+	private ArrayList<ModelTriangle> triangles;
+	private boolean initalized;
 	
 	/**
 	 * Constructor to create a Model. Contains rendering information.
@@ -27,14 +25,20 @@ public class Model {
 	 * @param shaderProgramID the integer ID of a shaderProgram who's inputs are associated with this model
 	 */
 	public Model(ArrayList<ModelTriangle> triangles, int shaderProgramID){
-		VAO vaoInfo = VAOcreater.createVAO(triangles, shaderProgramID);
-		this.vaoAddress = vaoInfo.getAddress();
-		this.numIndices = vaoInfo.numVertices();
-		this.textures = vaoInfo.getTextures();
 		this.shaderProgram = shaderProgramID;
+		this.triangles = triangles;
+		this.initalized = false;
 	}
 	
 	
+	/**
+	 * Initialize this model by creating a VAO and sending it to the GPU.
+	 * This method must be called in a thread with an openGL rendering context.
+	 */
+	public void initialize(){
+		this.vaoInfo = VAOcreater.createVAO(triangles, shaderProgram);
+		this.initalized = true;
+	}
 	
 	
 	/**
@@ -52,7 +56,7 @@ public class Model {
 	 * @return an openGL recognized int ID
 	 */
 	public int getVAO(){
-		return this.vaoAddress;
+		return this.vaoInfo.getAddress();
 	}
 	
 	
@@ -62,7 +66,7 @@ public class Model {
 	 * @return the number of indices this model's VAO is meant to render
 	 */
 	public int getNumIndices(){
-		return this.numIndices;
+		return this.vaoInfo.numVertices();
 	}
 	
 	
@@ -71,8 +75,11 @@ public class Model {
 	 * @return an array of Textures used by this Model
 	 */
 	public Texture[] getTextures(){
-		return this.textures;
+		return this.vaoInfo.getTextures();
 	}
 	
+	public boolean isInitialized(){
+		return this.initalized;
+	}
 	
 }

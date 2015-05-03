@@ -16,10 +16,9 @@ import com.AtomicGE.modernRender.renderObject.RenderObject;
 import com.AtomicGE.modernRender.texture.Texture;
 
 /**
+ * This class exists in order to render RenderObjects
  * 
  * @author Justin Bonner
- * This class exists in order to render RenderObjects
- *
  */
 public class RORenderer {
 	
@@ -34,6 +33,9 @@ public class RORenderer {
 	 * @param renderObject the RenderObject to render
 	 */
 	public void render(RenderObject renderObject){
+		//System.out.println(renderObject); 
+		if(renderObject == RenderObject.BLANK_RENDEROBJECT) return; //YES object == object NOT .equals(), testing if same object
+		if(!renderObject.getModel().isInitialized()) return;
 		
 		renderObject.preRenderCall();
 		

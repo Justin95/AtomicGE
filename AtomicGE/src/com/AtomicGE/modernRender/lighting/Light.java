@@ -35,6 +35,10 @@ public class Light {
 	}
 	
 	
+	/**
+	 * Sets the ambient light in the scene to the specified value.
+	 * @param light should be a float between 0 and 1, 0 being no light and 1 being full light
+	 */
 	public static void setAmbientLight(float light){
 		//TODO
 	}
